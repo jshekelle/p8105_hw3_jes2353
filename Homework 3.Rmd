@@ -1,0 +1,41 @@
+---
+title: "Homework 3"
+author: "Jeanette Shekelle"
+date: "10/9/2018"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+
+```
+
+```{r}
+library(p8105.datasets)
+```
+
+## Problem 1
+
+Data Import
+
+```{r}
+data("brfss_smart2010")
+```
+
+
+Data Cleaning:
+* format the data to use appropriate variable names;
+* focus on the “Overall Health” topic
+* include only responses from “Excellent” to “Poor”
+* organize responses as a factor taking levels ordered from “Excellent” to “Poor”
+
+```{r}
+brfss_smart2010 = 
+  brfss_smart2010 %>% 
+   janitor::clean_names() %>% 
+  filter(topic == "Overall Health") 
+
+ 
+
+```
+
