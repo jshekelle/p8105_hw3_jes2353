@@ -74,15 +74,68 @@ brfss_smart2010 %>%
 
 ```
 
-ggplot(brfss_smart2010, aes(x = locationdesc, y=, color=factor(ID))) +
-  geom_line() + geom_point() +
-  theme_bw()
+Another attempt:
 ```{r}
 brfss_smart2010 %>% 
-  
+  group_by(locationabbr) %>% 
+  summarize(locations_per_state = n(locationdesc))
 ```
 
 
+
 * Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
+
+```{r}
+brfss_smart2010 %>% 
+  filter(year == 2002 | year == 2006 | year == 2010) %>% 
+  filter(locationabbr == "NY") %>% 
+  group_by(year, response) %>% 
+  mutate(mean_excellent = mean(response == "Excellent"))
+ 
+```
+
+
+
 * For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
+
+```{r}
+
+```
+
+
+
+## Problem 2
+
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. Then, do or answer the following (commenting on the results of each):
+
+```{r}
+library(p8105.datasets)
+```
+
+```{r}
+data("instacart") 
+```
+
+
+How many aisles are there, and which aisles are the most items ordered from?
+
+```{r}
+
+```
+
+
+Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.
+
+
+Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.
+Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+
+
+
+## Problem 3
+
+```{r}
+data("ny_noaa")
+```
+
 
