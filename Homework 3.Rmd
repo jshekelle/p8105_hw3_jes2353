@@ -46,21 +46,43 @@ Answering the questions
 * In 2002, which states were observed at 7 locations?
 
 ```{r}
-brfss_smart2010 = 
-  brfss_smart2010 %>% 
+brfss_smart2010 %>% 
   filter(year == 2002) %>% 
   group_by(locationabbr) %>% 
-  count(unique(locationdesc))
+  distinct(locationdesc) %>% 
+  count() %>% 
+  filter(n == 7)
 ```
 
+There are 3 states that were observed at 7 locations: CT, FL, and NC. 
+
+
+* Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
+
 ```{r}
-brfss_smart2010 = 
-  brfss_smart2010 %>% 
+library(ggplot2)
+```
+
+
+```{r}
+brfss_smart2010 %>% 
+  group_by(locationabbr) %>% 
+  mutate(locations_per_state = count(distinct(locationdesc))) %>% 
+  ggplot(aes(x = locationabbr, y = locations_per_state)) +
+  geom_line() + geom_point() +
+  theme_bw()
+
+```
+
+ggplot(brfss_smart2010, aes(x = locationdesc, y=, color=factor(ID))) +
+  geom_line() + geom_point() +
+  theme_bw()
+```{r}
+brfss_smart2010 %>% 
   
 ```
 
 
-* Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
 * Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
 * For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
 
