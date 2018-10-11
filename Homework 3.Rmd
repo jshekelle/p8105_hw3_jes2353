@@ -66,21 +66,16 @@ library(ggplot2)
 
 ```{r}
 brfss_smart2010 %>% 
-  group_by(locationabbr) %>% 
-  mutate(locations_per_state = count(distinct(locationdesc))) %>% 
-  ggplot(aes(x = locationabbr, y = locations_per_state)) +
-  geom_line() + geom_point() +
-  theme_bw()
+  group_by(locationabbr, year) %>% 
+  distinct(locationdesc) %>% 
+  summarize(locations_per_state = n()) %>% 
+  ggplot(aes(x = year, y = locations_per_state, color = locationabbr)) +
+  geom_line() + theme_bw() + 
+  viridis::scale_color_viridis(discrete = TRUE)
 
 ```
 
-Another attempt:
-```{r}
-brfss_smart2010 %>% 
-  group_by(locationabbr) %>% 
-  summarize(locations_per_state = n(locationdesc))
-```
-
+It is really hard to distinguish the plots of different states. Many colors look basically the same. I tried changing the color scale but it is still hard to tell. We need 50 colors that all look very different from one another and I am not sure that exists. 
 
 
 * Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
@@ -115,7 +110,6 @@ library(p8105.datasets)
 ```{r}
 data("instacart") 
 ```
-
 
 How many aisles are there, and which aisles are the most items ordered from?
 
