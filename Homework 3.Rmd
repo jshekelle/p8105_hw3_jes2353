@@ -86,7 +86,10 @@ brfss_smart2010 %>%
   filter(year == 2002 | year == 2006 | year == 2010) %>% 
   filter(locationabbr == "NY") %>% 
   filter(response == "Excellent") %>% 
-  mean(data_value)
+  group_by(year) %>% 
+  summarise(mean_excellent = mean(data_value),
+            sd_excellent = sd(data_value)) %>% 
+  knitr::kable(digits = 2)
  
 ```
 
@@ -95,6 +98,12 @@ brfss_smart2010 %>%
 * For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
 
 ```{r}
+brfss_smart2010 %>% 
+  group_by(year, locationabbr, response) %>% 
+  summarize(mean_proportion = mean(data_value)) %>% 
+  ggplot(aes(x = year, y = mean_proportion, color = locationabbr)) +
+  geom_line() +
+  facet_grid(~response)
 
 ```
 
@@ -108,6 +117,7 @@ The goal is to do some exploration of this dataset. To that end, write a short d
 library(p8105.datasets)
 data("instacart") 
 ```
+
 
 ```{r}
 instacart %>% 
