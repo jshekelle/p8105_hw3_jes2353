@@ -119,30 +119,37 @@ data("instacart")
 ```
 
 
-```{r}
-instacart %>% 
+The instacart dataset has 15 variables and 1,384,617 observations. The key variables are the product name, aisle, and department because they tell us about the product. Other key variables are the the day of the week the product was ordered and the time of day. This information could be useful for planning product sales. 
 
-```
 
-The instacart dataset has 15 variables and 1,384,617 observations. 
+
+### Some questions
 
 How many aisles are there, and which aisles are the most items ordered from?
 
 ```{r}
 instacart %>% 
-  group_by(aisle) %>% 
-  count() %>% 
-  filter(min_rank(desc(n)))
+  distinct(aisle_id) %>% 
+  nrow()
 ```
 
+There are 134 aisles.
 
+```{r}
+instacart %>% 
+  group_by(aisle) %>% 
+  count() %>% 
+  min_rank(desc(n))
+```
+
+The most items are ordered from the following aisles: 
 
 Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.
 
 ```{r}
 instacart %>% 
   group_by(aisle) %>%
-  summarize(items_per_aisle = n())
+  summarize(items_per_aisle = n()) %>% 
   ggplot(aes(x = aisle, y = items_per_aisle)) +
   geom_point()
 ```
@@ -162,6 +169,14 @@ instacart %>%
 
 
 Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+
+```{r}
+instacart %>% 
+  filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>% 
+  group_by(product_name, order_dow) %>% 
+  summarise(mean_hour = mean(order_hour_of_day)) %>% 
+  spread(key = order_dow, value = mean_hour)
+```
 
 
 
