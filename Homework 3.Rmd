@@ -162,8 +162,8 @@ instacart %>%
   filter(aisle == "baking ingredients" | 
            aisle == "dog food care" | 
            aisle == "packaged vegetables fruits") %>% 
-  group_by(aisle, product_name) %>% 
-  summarize(most_popular = n())
+  group_by(aisle) %>% 
+  summarize(most_popular = max(product_name))
   
 ```
 
