@@ -93,6 +93,7 @@ brfss_smart2010 %>%
  
 ```
 
+The mean proportion of excellent responses only varies by 2% when looking at the years 2002, 2006, and 2010. It seems pretty consistent. 
 
 
 * For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
@@ -106,6 +107,8 @@ brfss_smart2010 %>%
   facet_grid(~response)
 
 ```
+
+Again, it is nearly impossible to distinguish specific states because the colors look very similar to one another. The lowest response proportion is for "Poor" and the highest response proportion is for "Very Good". All states clustered around the same 5-10% range for each response proportion. 
 
 
 
@@ -139,10 +142,11 @@ There are 134 aisles.
 instacart %>% 
   group_by(aisle) %>% 
   count() %>% 
-  min_rank(desc(n))
+  arrange(desc(n))
 ```
 
-The most items are ordered from the following aisles: 
+The most items are ordered from the following aisles: fresh vegetables, fresh fruits, packaged vegatables fruits, yogurt, and packaged cheese. This makes sense because these are all very general aisles that encompass many products. 
+
 
 Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.
 
@@ -154,18 +158,21 @@ instacart %>%
   geom_point()
 ```
 
+Since there are 134 aisles, this is way too many to be able to read along the x-axis. There are two aisles that have way more items ordered than any other aisle. Both have 150,000 things orderd from them. Based on the answer to the previous question, I know this is the fresh vegetables and fresh fruits aisles. 
+
 
 Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.
 
 ```{r}
 instacart %>% 
-  filter(aisle == "baking ingredients" | 
-           aisle == "dog food care" | 
-           aisle == "packaged vegetables fruits") %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
   group_by(aisle) %>% 
-  summarize(most_popular = max(product_name))
-  
+  count(product_name) %>% 
+  filter(min_rank(desc(n)) < 2) %>% 
+  knitr::kable()
 ```
+
+It is interesting to look at the number of items here. Even though Snack Sticks Chicken is the most popular item from dog food care aisle, there are only 30 ordered. This is tiny compared to the 9,784 bags of organic baby spinach ordered. 
 
 
 Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
@@ -178,6 +185,7 @@ instacart %>%
   spread(key = order_dow, value = mean_hour)
 ```
 
+The mean hour of the day that these two products are ordered at varies by a couple of hours. Coffee ice cream is typically ordered between 12pm and 3pm. Pink Lady Apples are ordered between 11am and 2pm. 
 
 
 ## Problem 3
@@ -187,4 +195,26 @@ library(p8105.datasets)
 data("ny_noaa")
 ```
 
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. Then, do or answer the following (commenting on the results of each):
 
+There are 2,595,176 observations in this dataset with each observation being a weather station ID. There are 7 columns. They are all key variables. They tell us the date of the measurement, the precipitation, snowfall, snow depth, and min and max temp. These are all important variables for tracking weather patterns and climate change. Missing data is definitely an issue. Some stations don't have information on all the variables. 
+
+
+
+Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
+
+```{r}
+ny_noaa %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(month = month.name[as.numeric(month)]
+         
+           
+```
+
+
+
+* Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+
+
+*Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
