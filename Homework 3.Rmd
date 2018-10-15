@@ -10,6 +10,7 @@ Loading libraries
 ```{r}
 library(tidyverse)
 library(p8105.datasets)
+library(ggplot2)
 
 ```
 
@@ -60,10 +61,6 @@ There are 3 states that were observed at 7 locations: CT, FL, and NC.
 
 
 * Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
-
-```{r}
-library(ggplot2)
-```
 
 
 ```{r}
@@ -210,7 +207,9 @@ ny_noaa_clean =
 ny_noaa %>% 
   janitor::clean_names() %>% 
   separate(date, into = c("year", "month", "day"), sep = "-") %>% 
-  mutate(month = month.name[as.numeric(month)])
+  mutate(month = month.name[as.numeric(month)],
+         tmin = as.numeric(tmin, na.rm = TRUE), 
+         tmax = as.numeric(tmax, na.rm = TRUE))
   
            
 ```
@@ -239,15 +238,44 @@ ny_noaa_clean %>%
   group_by(year, month) %>% 
   mutate(average_max_temp = mean(tmax, na.rm = TRUE)) %>% 
   ggplot(aes(x = year, y = average_max_temp)) +
-  geom_line() +
+  geom_point() +
   facet_grid(~month)
   
 ```
 
 
+The average max temp is way higher in July than in January. This is as expected. There were 3 extra cold outliers in July, 4 cold outliers in January, and 3 hot outliers in January. 
+
+
 * Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
 
 ```{r}
-
+library(patchwork)
+library(hexbin)
 ```
 
+
+```{r}
+ny_noaa_min_max = 
+ny_noaa_clean %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+  
+```
+
+
+```{r}
+ny_noaa_snow = 
+ny_noaa_clean %>% 
+  filter(snow > 0 & snow < 100) %>% 
+  group_by(year) %>% 
+  ggplot(aes(x = year, y = snow)) +
+  geom_boxplot()
+```
+
+
+```{r}
+ny_noaa_min_max + ny_noaa_snow
+```
+
+We can see areas with a higher t-min have a higher t-max. There is a linear relationship. For the snowfall plot, there is little variation in the 1980s and 1990s. Once it is in the 2000s, there is a lot of variation, perhaps due to global warming. There are a few years with several outliers that had much higher snowfall, but overall it doesn't vary much year to year.  

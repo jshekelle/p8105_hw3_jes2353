@@ -1,7 +1,7 @@
 Homework 3
 ================
 Jeanette Shekelle
-10/9/2018
+10/15/2018
 
 Loading libraries
 
@@ -9,19 +9,20 @@ Loading libraries
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
     ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## ── Conflicts ───────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
 library(p8105.datasets)
+library(ggplot2)
 ```
 
 Problem 1
@@ -33,7 +34,12 @@ Data Import
 data("brfss_smart2010")
 ```
 
-Data Cleaning: \* format the data to use appropriate variable names; \* focus on the “Overall Health” topic \* include only responses from “Excellent” to “Poor” \* organize responses as a factor taking levels ordered from “Excellent” to “Poor”
+Data Cleaning:
+
+-   format the data to use appropriate variable names;
+-   focus on the “Overall Health” topic
+-   include only responses from “Excellent” to “Poor”
+-   organize responses as a factor taking levels ordered from “Excellent” to “Poor”
 
 ``` r
 brfss_smart2010 = 
@@ -44,7 +50,9 @@ brfss_smart2010 =
   mutate(response_level = forcats::fct_relevel(response, c("Excellent", "Very good", "Good", "Fair", "Poor")))
 ```
 
-Answering the questions \* In 2002, which states were observed at 7 locations?
+### Answering the questions
+
+-   In 2002, which states were observed at 7 locations?
 
 ``` r
 brfss_smart2010 %>% 
@@ -68,10 +76,6 @@ There are 3 states that were observed at 7 locations: CT, FL, and NC.
 -   Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
 
 ``` r
-library(ggplot2)
-```
-
-``` r
 brfss_smart2010 %>% 
   group_by(locationabbr, year) %>% 
   distinct(locationdesc) %>% 
@@ -82,7 +86,7 @@ brfss_smart2010 %>%
   labs (title = "Number of distinct locations in each state 2002-2010")
 ```
 
-![](Homework_3_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](Homework_3_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 It is really hard to distinguish the plots of different states. Many colors look basically the same. I tried changing the color scale but it is still hard to tell. We need 50 colors that all look very different from one another and I am not sure that is possible. I don't think this is the best way to visualize this data because we can't tell what state had this huge spike in 2007 and 2010.
 
@@ -120,7 +124,7 @@ brfss_smart2010 %>%
 
     ## Warning: Removed 2 rows containing missing values (geom_path).
 
-![](Homework_3_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](Homework_3_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 Again, it is nearly impossible to distinguish specific states because the colors look very similar to one another. The lowest response proportion is for "Poor" and the highest response proportion is for "Very Good". All states clustered around the same 5-10% range for each response proportion.
 
@@ -185,7 +189,7 @@ instacart %>%
   geom_point()
 ```
 
-![](Homework_3_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](Homework_3_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 Since there are 134 aisles, this is way too many to be able to read along the x-axis. There are two aisles that have way more items ordered than any other aisle. Both have 150,000 things orderd from them. Based on the answer to the previous question, I know this is the fresh vegetables and fresh fruits aisles.
 
@@ -242,27 +246,80 @@ There are 2,595,176 observations in this dataset with each observation being a w
 Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
 
 ``` r
+ny_noaa_clean = 
 ny_noaa %>% 
   janitor::clean_names() %>% 
   separate(date, into = c("year", "month", "day"), sep = "-") %>% 
-  mutate(month = month.name[as.numeric(month)]) 
+  mutate(month = month.name[as.numeric(month)],
+         tmin = as.numeric(tmin, na.rm = TRUE), 
+         tmax = as.numeric(tmax, na.rm = TRUE))
 ```
 
-    ## # A tibble: 2,595,176 x 9
-    ##    id          year  month    day    prcp  snow  snwd tmax  tmin 
-    ##    <chr>       <chr> <chr>    <chr> <int> <int> <int> <chr> <chr>
-    ##  1 US1NYAB0001 2007  November 01       NA    NA    NA <NA>  <NA> 
-    ##  2 US1NYAB0001 2007  November 02       NA    NA    NA <NA>  <NA> 
-    ##  3 US1NYAB0001 2007  November 03       NA    NA    NA <NA>  <NA> 
-    ##  4 US1NYAB0001 2007  November 04       NA    NA    NA <NA>  <NA> 
-    ##  5 US1NYAB0001 2007  November 05       NA    NA    NA <NA>  <NA> 
-    ##  6 US1NYAB0001 2007  November 06       NA    NA    NA <NA>  <NA> 
-    ##  7 US1NYAB0001 2007  November 07       NA    NA    NA <NA>  <NA> 
-    ##  8 US1NYAB0001 2007  November 08       NA    NA    NA <NA>  <NA> 
-    ##  9 US1NYAB0001 2007  November 09       NA    NA    NA <NA>  <NA> 
-    ## 10 US1NYAB0001 2007  November 10       NA    NA    NA <NA>  <NA> 
-    ## # ... with 2,595,166 more rows
+For snowfall, what are the most commonly observed values? Why?
+
+``` r
+ny_noaa_clean %>% 
+  group_by(snow) %>% 
+  count(snow) %>% 
+  summarise(most_common_snow = max(n, na.rm = TRUE)) %>% 
+  arrange(desc(most_common_snow)) %>% 
+  top_n(1)
+```
+
+    ## Selecting by most_common_snow
+
+    ## # A tibble: 1 x 2
+    ##    snow most_common_snow
+    ##   <int>            <dbl>
+    ## 1     0          2008508
+
+The most common observed value is 0. This is what I expected because it only snows for a few months a year, so most of the time the weather station is getting no snow.
 
 -   Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
 
-\*Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+``` r
+ny_noaa_clean %>%
+  filter(month == "January" | month == "July") %>% 
+  group_by(year, month) %>% 
+  mutate(average_max_temp = mean(tmax, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year, y = average_max_temp)) +
+  geom_point() +
+  facet_grid(~month)
+```
+
+![](Homework_3_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+The average max temp is way higher in July than in January. This is as expected. There were 3 extra cold outliers in July, 4 cold outliers in January, and 3 hot outliers in January.
+
+-   Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+
+``` r
+library(patchwork)
+library(hexbin)
+```
+
+``` r
+ny_noaa_min_max = 
+ny_noaa_clean %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
+
+``` r
+ny_noaa_snow = 
+ny_noaa_clean %>% 
+  filter(snow > 0 & snow < 100) %>% 
+  group_by(year) %>% 
+  ggplot(aes(x = year, y = snow)) +
+  geom_boxplot()
+```
+
+``` r
+ny_noaa_min_max + ny_noaa_snow
+```
+
+    ## Warning: Removed 1136276 rows containing non-finite values (stat_binhex).
+
+![](Homework_3_files/figure-markdown_github/unnamed-chunk-21-1.png)
+
+We can see areas with a higher t-min have a higher t-max. There is a linear relationship. For the snowfall plot, there is little variation in the 1980s and 1990s. Once it is in the 2000s, there is a lot of variation, perhaps due to global warming. There are a few years with several outliers that had much higher snowfall, but overall it doesn't vary much year to year.
